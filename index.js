@@ -62,16 +62,17 @@ class LinkedList {
   }
   toString() {
     const base = `( ${this.head.value} )`;
-
-    if (this.size <= 0) return base;
+    const nullItem = ` ( null )`;
+    const arrowItem = ` -->`;
+    if (this.size <= 0) return base + arrowItem + nullItem;
     else {
       let tmp = this.head.nextNode;
       let childNodes = ` -->`;
 
       while (tmp) {
-        if (tmp.value) childNodes += ` ( ${tmp.value} ) -->`;
+        if (tmp.value) childNodes += ` ( ${tmp.value} )` + arrowItem;
         if (tmp.nextNode === null) {
-          childNodes += ` ( null )`;
+          childNodes += nullItem;
         }
         tmp = tmp.nextNode;
       }
@@ -79,6 +80,9 @@ class LinkedList {
     }
   }
   insertAt(value, index) {
+    if (this.size + 1 === index) return this.append(value);
+    if (this.size < index) return "No such index";
+
     if (index === 0) {
       let nextNodeElement = this.head;
 
@@ -86,13 +90,29 @@ class LinkedList {
 
       return;
     } else if (index === this.size) {
-      itemBeforeLast.nextNode = new Node(value);
+      let itemBeforeIndex = this.at(index - 1);
+      let nextItem = null;
+      if (this.at(index)) nextItem = this.at(index);
+      itemBeforeIndex.nextNode = new Node(value, nextItem);
     } else {
       let itemBeforeIndex = this.at(index - 1);
-      let current = this.at(index);
-      itemBeforeIndex.nextNode = new Node(value, current);
+
+      itemBeforeIndex.nextNode = new Node(value, this.at(index + 1));
     }
   }
+  removeAt(index) {
+    if (index < 0) return "No such item";
+    if (index === 0 && this.size === 0) {
+      return "You can't delete root node";
+    }
+    if (index === 0) {
+      return (this.root = this.at(1));
+    }
+    let itemBeforeIndex = this.at(index - 1);
+    let itemAfterIndex = this.at(index + 1);
+    itemBeforeIndex.nextNode = itemAfterIndex;
+  }
+
   get size() {
     let tmp = this.root;
     if (!tmp) return null;
@@ -126,13 +146,12 @@ class Node {
 }
 
 const linkedList = new LinkedList("b");
-linkedList.append("erenova");
-linkedList.append("chehehe");
-linkedList.append("sdhdfhfsdh");
-linkedList.append("mustafa");
-linkedList.prepend("veusel ubadekaya");
-linkedList.append("ben sonuncu elemaaang");
+
 console.log(linkedList.toString());
-linkedList.insertAt("xcf", 0);
+console.log(linkedList.size);
+linkedList.insertAt("eren", 0);
+console.log(linkedList.toString());
+linkedList.removeAt(2);
+linkedList.removeAt(1);
 
 console.log(linkedList.toString());
