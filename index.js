@@ -38,7 +38,7 @@ class LinkedList {
     if (this.size < 0) {
       return null;
     } else {
-      let tmp = this.head;
+      let tmp = this.root;
       while (tmp) {
         if (tmp.value === value) return true;
         else {
@@ -49,13 +49,17 @@ class LinkedList {
     }
   }
   find(value) {
-    if (this.size < 0) {
+    if (this.size <= 0) {
       return null;
     } else {
       let tmp = this.head;
+      if (!tmp) return null;
+
       for (let i = 0; i <= this.size; i++) {
         if (tmp.value === value) return i;
-        tmp = tmp.nextNode;
+        if (tmp.nextNode) {
+          tmp = tmp.nextNode;
+        }
       }
       return null;
     }
@@ -80,7 +84,7 @@ class LinkedList {
     }
   }
   insertAt(value, index) {
-    if (this.size + 1 === index) return this.append(value);
+    if (this.size === index) return this.append(value);
     if (this.size < index) return "No such index";
 
     if (index === 0) {
@@ -97,7 +101,7 @@ class LinkedList {
     } else {
       let itemBeforeIndex = this.at(index - 1);
 
-      itemBeforeIndex.nextNode = new Node(value, this.at(index + 1));
+      itemBeforeIndex.nextNode = new Node(value, this.at(index));
     }
   }
   removeAt(index) {
@@ -115,14 +119,12 @@ class LinkedList {
 
   get size() {
     let tmp = this.root;
-    if (!tmp) return null;
-
-    let indexCount = 0;
-    while (tmp.nextNode) {
-      indexCount++;
+    let count = 0;
+    while (tmp) {
+      count++;
       tmp = tmp.nextNode;
     }
-    return indexCount;
+    return count;
   }
 
   get head() {
@@ -145,13 +147,39 @@ class Node {
   }
 }
 
-const linkedList = new LinkedList("b");
+function runLinkedListTests() {
+  console.log("LinkedList Testleri Başlıyor...");
+  const list = new LinkedList("ilk");
 
-console.log(linkedList.toString());
-console.log(linkedList.size);
-linkedList.insertAt("eren", 0);
-console.log(linkedList.toString());
-linkedList.removeAt(2);
-linkedList.removeAt(1);
+  // Test 1: Son ekleme
+  list.append("son");
+  console.assert(list.tail.value === "son", "Son eleman 'son' olmalı.");
 
-console.log(linkedList.toString());
+  // Test 2: Başa ekleme
+  list.prepend("baş");
+  console.assert(list.head.value === "baş", "Baş eleman 'baş' olmalı.");
+
+  // Test 3: Belirli bir indekse ekleme
+  list.insertAt("orta", 1); // 'baş' ve 'ilk' arasına ekler
+  console.assert(list.at(1).value === "orta", "'orta', 1. indekste olmalı.");
+
+  // Test 4: Size kontrolü
+  const expectedSize = 4;
+  console.assert(
+    list.size === expectedSize,
+    `Liste boyutu ${expectedSize} olmalı.`,
+  );
+
+  // Test 5: contains ve find
+  console.assert(list.contains("son"), "'son' değeri listede bulunmalı.");
+  console.assert(list.find("orta") === 1, "'orta' değerinin indeksi 1 olmalı.");
+
+  // Test 6: Belirli bir indeksten çıkarma ve çıkarılan eleman kontrolü
+  list.removeAt(1); // 'orta'yı çıkarır
+  console.assert(list.at(1).value === "ilk", "1. indekste şimdi 'ilk' olmalı.");
+
+  // Test 7: Son durumu kontrol et
+  console.log("Son Liste Durumu: ", list.toString());
+}
+
+runLinkedListTests();
